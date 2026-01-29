@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Calcul Moyenne - Promotion</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            width: 450px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        .result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .message {
+            text-align: center;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .signature {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Calcul de Moyenne</h2>
+
+    <label>Nombre de matières</label>
+    <input type="number" id="numSubjects" min="1" value="1">
+
+    <div id="subjects"></div>
+
+    <button onclick="generateFields()">Valider le nombre de matières</button>
+    <button onclick="calculateAverage()" style="margin-top:10px;">Calculer la moyenne</button>
+
+    <div class="result" id="result"></div>
+    <div class="message" id="message"></div>
+
+    <div class="signature">Designed by Rofia Programmer</div>
+</div>
+
+<script>
+function generateFields() {
+    const num = document.getElementById('numSubjects').value;
+    const container = document.getElementById('subjects');
+    container.innerHTML = '';
+    for(let i=1; i<=num; i++){
+        container.innerHTML += `
+            <h4>Matière ${i}</h4>
+            CC: <input type="number" step="0.01" id="cc${i}" required><br>
+            Exam: <input type="number" step="0.01" id="exam${i}" required><br>
+            Coefficient: <input type="number" step="0.01" id="coef${i}" required><br><br>
+        `;
+    }
+}
+
+function calculateAverage() {
+    const num = document.getElementById('numSubjects').value;
+    let total = 0;
+    let totalCoef = 0;
+
+    for(let i=1; i<=num; i++){
+        const cc = parseFloat(document.getElementById('cc'+i).value);
+        const exam = parseFloat(document.getElementById('exam'+i).value);
+        const coef = parseFloat(document.getElementById('coef'+i).value);
+        const note = cc*0.4 + exam*0.6;
+        total += note * coef;
+        totalCoef += coef;
+    }
+
+    const moyenne = total / totalCoef;
+    const mention = moyenne >= 10 ? "Admis" : "Ajourné";
+    const color = moyenne >= 10 ? "green" : "red";
+
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = `Moyenne générale: ${moyenne.toFixed(2)} <br> Mention: ${mention}`;
+    resultDiv.style.color = color;
+
+    const messageDiv = document.getElementById('message');
+    if(moyenne >= 10){
+        messageDiv.innerHTML = "🎉 تهانينا! حافظوا على مستوى التحصيل!";
+        messageDiv.style.color = "green";
+    } else {
+        messageDiv.innerHTML = "😌 لا تقلقوا، ركّزوا على التحضير القادم!";
+        messageDiv.style.color = "orange";
+    }
+}
+</script>
+
+</body>
+</html>
