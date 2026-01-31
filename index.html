@@ -2,189 +2,226 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>حساب المعدل - Rofia Programmer</title>
+<title>حساب المعدل</title>
+
 <style>
-body {
+body{
     font-family: Arial, sans-serif;
     margin:0;
     min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    /* خلفية بنفسجية فاتحة متدرجة */
     background: linear-gradient(135deg, #e6ccff, #f3e6ff);
 }
-.container {
-    background: white;
-    padding: 25px;
-    width: 450px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
-    text-align: center;
+
+.container{
+    background:white;
+    padding:25px;
+    width:460px;
+    border-radius:16px;
+    box-shadow:0 0 25px rgba(0,0,0,0.25);
+    text-align:center;
 }
-input {
-    width: 85%;
-    padding: 8px;
-    margin: 6px 0;
-    text-align: center;
-    border-radius:5px;
+
+input{
+    width:85%;
+    padding:8px;
+    margin:6px 0;
+    text-align:center;
+    border-radius:6px;
     border:1px solid #ccc;
 }
-button {
-    padding: 10px 20px;
-    margin-top: 10px;
-    cursor: pointer;
+
+button{
+    padding:10px 22px;
+    margin-top:10px;
     border:none;
-    border-radius:7px;
+    border-radius:8px;
     background:#7b2ff7;
     color:white;
     font-weight:bold;
-    transition: 0.3s;
+    cursor:pointer;
 }
-button:hover {background:#f107a3;}
-#result {
-    margin-top: 15px;
-    padding: 15px;
-    border: 3px solid;
-    display: none;
-    font-weight: bold;
-    text-align: center;
-    border-radius:10px;
+
+button:hover{background:#5f22c9;}
+
+.lang{
+    margin-bottom:10px;
 }
-.success { border-color: green; color: green; }
-.fail { border-color: red; color: red; }
-.lang { margin-bottom: 10px; }
-.signature { margin-top: 15px; font-size: 12px; color: #777; font-style: italic; }
-hr { margin:10px 0; border:0; border-top:1px solid #ccc; }
+
+.note{
+    background:#fdeaea;
+    border:1px solid #e74c3c;
+    color:#b30000;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:15px;
+    font-size:13px;
+    text-align:right;
+}
+
+#result{
+    margin-top:18px;
+    padding:16px;
+    border:4px solid;
+    border-radius:12px;
+    display:none;
+    font-weight:bold;
+}
+
+.success{border-color:#1fa64a;color:#1fa64a;}
+.fail{border-color:#d11a2a;color:#d11a2a;}
+
+.signature{
+    margin-top:18px;
+    font-size:12px;
+    color:#777;
+    font-style:italic;
+}
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
-    <!-- Switch language -->
-    <div class="lang">
-        <button onclick="setLang('ar')">AR</button>
-        <button onclick="setLang('en')">EN</button>
+<div class="lang">
+    <button onclick="setLang('ar')">AR</button>
+    <button onclick="setLang('en')">EN</button>
+</div>
+
+<h2 id="title">حساب المعدل</h2>
+
+<!-- الصفحة الأولى -->
+<div id="step1">
+    <p id="modulesText">أدخل عدد المواد</p>
+    <input type="number" id="modules" min="1">
+    <br><br>
+    <button id="confirmBtn" onclick="goToStep2()">تأكيد</button>
+</div>
+
+<!-- الصفحة الثانية -->
+<div id="step2" style="display:none;">
+
+    <div class="note" id="noteText">
+        📌 تنويه: إذا كانت المادة بدون تقويم مستمر (CC) ومعاملها = 1،
+        تُحسب علامة الامتحان فقط.
     </div>
 
-    <h2 id="title">حساب المعدل</h2>
+    <div id="marks"></div>
 
-    <!-- Step 1: عدد المواد -->
-    <div id="step1">
-        <p id="modulesText">أدخل عدد المواد</p>
-        <input type="number" id="modules" min="1">
-        <button onclick="createInputs()" id="confirmBtn">تأكيد</button>
-    </div>
+    <button id="calcBtn" onclick="calculate()">حساب المعدل</button>
+</div>
 
-    <!-- Step 2: إدخال العلامات -->
-    <div id="step2" style="display:none;">
-        <div id="marks"></div>
-        <button onclick="calculate()" id="calcBtn">حساب المعدل</button>
-    </div>
+<div id="result"></div>
 
-    <!-- النتيجة -->
-    <div id="result"></div>
+<div class="signature">Designed by Hadjer Bougoum</div>
 
-    <div class="signature">Designed by Rofia Programmer</div>
 </div>
 
 <script>
-let lang='ar';
+let lang="ar";
 
-const text = {
-    ar:{
-        title:"حساب المعدل",
-        modules:"أدخل عدد المواد",
-        confirm:"تأكيد",
-        calc:"حساب المعدل",
-        success:"🌟 نجاحك اليوم هو خطوة جديدة نحو مستقبل أفضل.",
-        fail:"🌱 لا تيأس، ما زالت لديك فرصة، بالاجتهاد والتركيز ستصل للنجاح.",
-        need:"المعدل المطلوب في الفصل الثاني للنجاح:",
-        mark:"المادة",
-        cc:"CC",
-        exam:"الامتحان",
-        coef:"المعامل"
-    },
-    en:{
-        title:"Average Calculator",
-        modules:"Enter number of modules",
-        confirm:"Confirm",
-        calc:"Calculate average",
-        success:"🌟 Your success today is a step towards a better future.",
-        fail:"🌱 Don't give up, you still have a chance. Keep focusing.",
-        need:"Required semester 2 average to pass:",
-        mark:"Module",
-        cc:"CC",
-        exam:"Exam",
-        coef:"Coefficient"
-    }
+const text={
+ar:{
+title:"حساب المعدل",
+modules:"أدخل عدد المواد",
+confirm:"تأكيد",
+calc:"حساب المعدل",
+note:"📌 تنويه: إذا كانت المادة بدون تقويم مستمر (CC) ومعاملها = 1، تُحسب علامة الامتحان فقط.",
+mark:"المادة",
+cc:"CC",
+exam:"الامتحان",
+coef:"المعامل",
+success:"🌟 نجاحك اليوم هو خطوة جديدة نحو مستقبل أفضل.",
+fail:"🌱 لا تيأس، ما زالت لديك فرصة، بالاجتهاد والتركيز ستصل للنجاح.",
+avg:"المعدل العام",
+need:"المعدل المطلوب في الفصل الثاني للنجاح:"
+},
+en:{
+title:"Average Calculator",
+modules:"Enter number of modules",
+confirm:"Confirm",
+calc:"Calculate average",
+note:"📌 Note: If the module has no CC and coefficient = 1, only the exam mark is counted.",
+mark:"Module",
+cc:"CC",
+exam:"Exam",
+coef:"Coefficient",
+success:"🌟 Your success today is a step towards a better future.",
+fail:"🌱 Don't give up, you still have a chance. Keep working.",
+avg:"General average",
+need:"Required semester 2 average to pass:"
+}
 };
 
 function setLang(l){
-    lang=l;
-    document.getElementById("title").innerText=text[l].title;
-    document.getElementById("modulesText").innerText=text[l].modules;
-    document.getElementById("confirmBtn").innerText=text[l].confirm;
-    document.getElementById("calcBtn").innerText=text[l].calc;
-    const n=document.querySelectorAll("#marks div").length;
-    if(n>0){
-        for(let i=1;i<=n;i++){
-            document.getElementById("cc"+i+"_label").innerText=text[l].cc;
-            document.getElementById("exam"+i+"_label").innerText=text[l].exam;
-            document.getElementById("coef"+i+"_label").innerText=text[l].coef;
-        }
-    }
+lang=l;
+document.body.dir=(l==="ar")?"rtl":"ltr";
+document.getElementById("title").innerText=text[l].title;
+document.getElementById("modulesText").innerText=text[l].modules;
+document.getElementById("confirmBtn").innerText=text[l].confirm;
+document.getElementById("calcBtn").innerText=text[l].calc;
+document.getElementById("noteText").innerText=text[l].note;
 }
 
-function createInputs(){
-    const n=parseInt(document.getElementById("modules").value);
-    if(n<=0 || isNaN(n)) return;
-    let html="";
-    for(let i=1;i<=n;i++){
-        html+=`<div>
-            <h4>${text[lang].mark} ${i}</h4>
-            <label id="cc${i}_label">${text[lang].cc}</label><br>
-            <input type="number" id="cc${i}" min="0" max="20"><br>
-            <label id="exam${i}_label">${text[lang].exam}</label><br>
-            <input type="number" id="exam${i}" min="0" max="20"><br>
-            <label id="coef${i}_label">${text[lang].coef}</label><br>
-            <input type="number" id="coef${i}" min="1"><hr>
-        </div>`;
-    }
-    document.getElementById("marks").innerHTML=html;
-    document.getElementById("step2").style.display="block";
+function goToStep2(){
+const n=parseInt(document.getElementById("modules").value);
+if(!n||n<=0)return;
+
+document.getElementById("step1").style.display="none";
+document.getElementById("step2").style.display="block";
+
+let html="";
+for(let i=1;i<=n;i++){
+html+=`
+<div>
+<h4>${text[lang].mark} ${i}</h4>
+<label>${text[lang].cc}</label><br>
+<input type="number" id="cc${i}" min="0" max="20"><br>
+<label>${text[lang].exam}</label><br>
+<input type="number" id="exam${i}" min="0" max="20"><br>
+<label>${text[lang].coef}</label><br>
+<input type="number" id="coef${i}" min="1"><hr>
+</div>`;
+}
+document.getElementById("marks").innerHTML=html;
 }
 
 function calculate(){
-    const n=document.querySelectorAll("#marks div").length;
-    let total=0, totalCoef=0;
-    for(let i=1;i<=n;i++){
-        const cc=parseFloat(document.getElementById("cc"+i).value)||0;
-        const exam=parseFloat(document.getElementById("exam"+i).value)||0;
-        const coef=parseFloat(document.getElementById("coef"+i).value)||1;
-        const note=cc*0.4 + exam*0.6;
-        total+=note*coef;
-        totalCoef+=coef;
-    }
-    const avg=total/totalCoef;
-    const result=document.getElementById("result");
-    result.style.display="block";
+const n=document.querySelectorAll("#marks div").length;
+let total=0,totalCoef=0;
 
-    if(avg>=10){
-        result.className="success";
-        result.innerHTML=`${text[lang].success}<br>المعدل: ${avg.toFixed(2)}`;
-    } else {
-        const needed = 20 - avg;
-        const semesterText = lang==="ar" ? "معدل الفصل الأول" : "Semester 1 average";
-        result.className="fail";
-        result.innerHTML=`
-        ${text[lang].fail}<br>
-        ${semesterText}: ${avg.toFixed(2)}<br>
-        ${text[lang].need} ${needed.toFixed(2)}
-        `;
-    }
+for(let i=1;i<=n;i++){
+const ccVal=document.getElementById("cc"+i).value;
+const exam=parseFloat(document.getElementById("exam"+i).value)||0;
+const coef=parseFloat(document.getElementById("coef"+i).value)||1;
+let note=(ccVal==="")?exam:(parseFloat(ccVal)*0.4+exam*0.6);
+total+=note*coef;
+totalCoef+=coef;
 }
+
+const avg=total/totalCoef;
+const res=document.getElementById("result");
+res.style.display="block";
+
+if(avg>=10){
+res.className="success";
+res.innerHTML=`${text[lang].success}<br>${text[lang].avg}: ${avg.toFixed(2)}`;
+}else{
+const needed=(20-avg).toFixed(2);
+res.className="fail";
+res.innerHTML=`
+${text[lang].fail}<br>
+${text[lang].avg}: ${avg.toFixed(2)}<br>
+${text[lang].need} ${needed}
+`;
+}
+}
+
+setLang("ar");
 </script>
+
 </body>
 </html>
